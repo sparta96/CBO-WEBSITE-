@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angaza West Initiative</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+  <style>  
+    /* 3D Header Styles */
+.header-3d {
+  background: linear-gradient(145deg, #2c3e50, #34495e);
+  padding: 1.5rem 2rem;
+  border-radius: 0 0 15px 15px;
+  box-shadow: 
+    0 10px 20px rgba(0, 0, 0, 0.3),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  position: relative;
+   overflow: hidden;
+  border-bottom: 4px solid #070706;
+}
+
+.header-3d.hidden {
+  transform: translateY(-100%);
+}
+
+.header-3d::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, #f39c12, #e74c3c, #f39c12);
+  background-size: 200% 100%;
+  animation: gradientShift 3s linear infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.logo-3d {
+  display: inline-block;
+  font-size: 3rem;
+  color: #f1c40f;
+  text-shadow: 
+    0 3px 0 #e67e22,
+    0 6px 8px rgba(0, 0, 0, 0.4),
+    0 9px 10px rgba(0, 0, 0, 0.2);
+  transform: perspective(500px) rotateX(20deg);
+  margin-bottom: 1rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: perspective(500px) rotateX(20deg) translateY(0); }
+  50% { transform: perspective(500px) rotateX(20deg) translateY(-10px); }
+}
+
+.title-3d {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #ecf0f1;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin: 0.5rem 0;
+  position: relative;
+
+}
+
+.title-3d::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  color: rgba(255, 255, 255, 0.3);
+  z-index: -1;
+}
+
+.subtitle-3d {
+  color: #bdc3c7;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  position: relative;
+}
+
+.subtitle-3d::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #f39c12, transparent);
+}
+
+
+    /* Rest of existing styles */
+     html, body {
+      height: 100%;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+    .main-content {
+      flex: 1;
+      min-height: 0;
+    }
+   
+       /* Sidebar transition */
+    #sidebar {
+      transition: all 0.3s ease;
+    }
+    /* Collapsed state */
+    .sidebar-collapsed {
+      width: 80px !important;
+      overflow: hidden;
+    }
+    .sidebar-collapsed .menu-text {
+      display: none;
+    }
+    .sidebar-collapsed .sidebar-header h2 {
+      display: none;
+    }
+    .sidebar-collapsed .menu-item {
+      justify-content: center;
+      padding: 12px 0;
+    }
+    .sidebar-collapsed .collapse-btn i {
+      transform: rotate(180deg);
+    }
+
+     /* Clean, flat styling */
+    .pdf-container {
+      width: 100%;
+      height: 500px;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      background: #f9fafb;
+    }
+    
+    .pdf-viewer {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .pdf-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .certificate-card {
+      transition: all 0.2s ease;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .certificate-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 2rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    .section-title:after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 2px;
+      background: #3b82f6;
+      margin: 0.5rem auto 0;
+    }
+  </style>
+</head>
+
+
+<body class="bg-sky-100 text-gray-800 flex flex-col min-h-screen">
+  <!-- Sidebar and Main Content Wrapper -->
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-stone-400 text-white min-h-full p-4 space-y-4 fixed md:relative z-10">
+      <!-- Sidebar Header -->
+      <div class="sidebar-header p-2 border-b border-blue-700">
+        <h2 class="text-2xl font-bold"><i class="fas fa-gauge"></i> <span class="menu-text">Dashboard</span></h2>
+      </div>
+      
+      <!-- Sidebar Menu -->
+      <div class="flex-1 overflow-y-auto">
+        <nav class="space-y-1">
+          <a href="#about" class="menu-item flex items-center p-3 rounded hover:bg-blue-700 cursor-pointer">
+            <i class="fas fa-info-circle text-lg w-6 text-center"></i>
+            <span class="menu-text ml-3">About</span>
+          </a>
+          <a href="#founders" class="menu-item flex items-center p-3 rounded hover:bg-blue-700 cursor-pointer">
+            <i class="fas fa-users text-lg w-6 text-center"></i>
+            <span class="menu-text ml-3">Founders</span>
+          </a>
+          <a href="#members" class="menu-item flex items-center p-3 rounded hover:bg-blue-700 cursor-pointer">
+            <i class="fas fa-user-friends text-lg w-6 text-center"></i>
+            <span class="menu-text ml-3">Members</span>
+          </a>
+          <a href="#projects" class="menu-item flex items-center p-3 rounded hover:bg-blue-700 cursor-pointer">
+            <i class="fas fa-project-diagram text-lg w-6 text-center"></i>
+            <span class="menu-text ml-3">Projects</span>
+          </a>
+           <a href="#programs" class="menu-item flex items-center p-3 rounded hover:bg-blue-700 cursor-pointer">
+          <i class="fas fa-tasks text-lg w-6 text-center"></i>
+          <span class="ml-3">Programs</span>
+        </a>
+          <a href="#news" class="menu-item flex items-center p-3 rounded hover:bg-blue-700 cursor-pointer">
+            <i class="fas fa-newspaper text-lg w-6 text-center"></i>
+            <span class="menu-text ml-3">News</span>
+          </a>
+          <a href="#vacancies" class="menu-item flex items-center p-3 rounded hover:bg-blue-700 cursor-pointer">
+            <i class="fas fa-briefcase text-lg w-6 text-center"></i>
+            <span class="menu-text ml-3">Vacancies</span>
+          </a>
+          <a href="#contact" class="menu-item flex items-center p-3 rounded hover:bg-blue-700 cursor-pointer">
+            <i class="fas fa-phone-alt text-lg w-6 text-center"></i>
+            <span class="menu-text ml-3">Contact</span>
+          </a>
+          <a href="#donate" class="menu-item flex items-center p-3 rounded hover:bg-blue-700 cursor-pointer">
+            <i class="fas fa-donate text-lg w-6 text-center"></i>
+            <span class="menu-text ml-3">Donate</span>
+          </a>
+        </nav>
+      </div>
+      
+      <!-- Collapse Button -->
+      <div class="p-2 border-t border-blue-700">
+        <button id="collapseSidebar" class="collapse-btn w-full flex items-center justify-center p-2 rounded hover:bg-blue-700 text-white">
+          <i class="fas fa-chevron-left"></i>
+          <span class="menu-text ml-2">Collapse</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden main-content">
+      <!-- Header -->
+           <header class="header-3d">
+        <div class="logo-3d">
+          <i class="fas fa-hands-helping"></i>
+        </div>
+        <h1 class="title-3d" data-text="Angaza West">Angaza West</h1>
+        <p class="subtitle-3d">Empowering Kahawa Soweto Community Through Youth to Youth Empowerment</p>
+      </header>
+
+      <!-- Content Container -->
+      <div class="overflow-y-auto flex-1">
+        <!-- About Section -->
+        <section id="about" class="p-8 bg-white">
+          <h2 class="text-2xl font-semibold mb-4">ABOUT US</h2>
+          <p class="text-lg">
+            Angaza West Initiative is a Community-Based Organization (CBO) formed to empower the local community through sustainable development, education, and youth engagement. It was established by dedicated members who aim to create a brighter and more inclusive future for all.
+          </p>
+        </section>
+
+          <!-- Founders Section -->
+        <section id="founders" class="p-8">
+          <h2 class="text-2xl font-semibold mb-6">FOUNDERS</h2>
+          <div class="space-y-8">
+            
+            <div class="founder-card bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row">
+              <div class="md:w-1/3">
+                <img src="" 
+                   alt="Founder" class="w-full h-64 md:h-full object-cover">
+              </div>
+              <div class="p-6 md:w-2/3">
+                <h3 class="text-2xl font-bold mb-2">PETER MBUTHIA GITAU</h3>
+                <p class="text-blue-600 font-medium mb-4">CHAIRPERSON / PRESIDENT</p>
+                <p class="text-gray-600 mb-4">
+                 Provides overall leadership and direction for the CBO.
+                 Chairs meetings and ensures proper conduct.
+                 Acts as the official spokesperson of the organization.
+                 Oversees strategic planning and ensures goals are met.
+                </p>
+                <div class="flex space-x-4">
+                  <a href="https://www.facebook.com/" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a href="https://wa.me/+254728281171" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a href="mailto:mbuthia@angazawest.org" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="founder-card bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row">
+              <div class="md:w-1/3">
+                <img src="" 
+                   alt="Founder" class="w-full h-64 md:h-full object-cover">
+              </div>
+              <div class="p-6 md:w-2/3">
+                <h3 class="text-2xl font-bold mb-2">MERCY WAMBUI</h3>
+                <p class="text-blue-600 font-medium mb-4">SECRETARY</p>
+                <p class="text-gray-600 mb-4">
+                 Records and keeps minutes of all meetings.
+                 Maintains records and correspondence.
+                 Prepares meeting agendas in collaboration with the Chairperson.
+                 Ensures timely communication within the organization.
+                </p>
+                <div class="flex space-x-4">
+                  <a href="https://www.facebook.com/" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a href="https://wa.me/+254704022508" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a href="mailto:mercy@angazawest.org" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="founder-card bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row">
+              <div class="md:w-1/3">
+                <img src="thuo.png" 
+                   alt="Founder" class="w-full h-64 md:h-full object-cover">
+              </div>
+              <div class="p-6 md:w-2/3">
+                <h3 class="text-2xl font-bold mb-2">MATTHEW MUIRURI THUO</h3>
+                <p class="text-blue-600 font-medium mb-4">VICE CHAIRPERSON / VICE PRESIDENT</p>
+                <p class="text-gray-600 mb-4">
+                 Assists the Chairperson in their responsibilities.
+                 Acts in the absence of the Chairperson.
+                 Helps coordinate specific projects or committees.
+                 Supports decision-making processes.
+                </p>
+                <div class="flex space-x-4">
+                  <a href="https://www.facebook.com/" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a href="https://wa.me/+254724428540" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a href="mailto:matthew@angazawest.org" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="founder-card bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row">
+              <div class="md:w-1/3">
+                <img src="sos.jpg" 
+                   alt="Founder" class="w-full h-64 md:h-full object-cover">
+              </div>
+              <div class="p-6 md:w-2/3">
+                <h3 class="text-2xl font-bold mb-2">SOSPETER ALEX VYALU</h3>
+                <p class="text-blue-600 font-medium mb-4">PROJECT C0-ORDINATOR</p>
+                <p class="text-gray-600 mb-4">
+                 Plans and oversees the implementation of projects.
+                 Prepares project proposals and reports.
+                 Coordinates team activities and timelines.
+                 Ensures resources are used efficiently.
+                </p>
+                <div class="flex space-x-4">
+                  <a href="https://www.facebook.com/" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a href="https://wa.me/+254791503092" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a href="mailto:sospeter@angazawest.org" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="founder-card bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row">
+              <div class="md:w-1/3">
+                <img src="" 
+                   alt="Founder" class="w-full h-64 md:h-full object-cover">
+              </div>
+              <div class="p-6 md:w-2/3">
+                <h3 class="text-2xl font-bold mb-2">ANTONY KINYANJUI</h3>
+                <p class="text-blue-600 font-medium mb-4">MONITORING AND EVALUATION OFFICER</p>
+                <p class="text-gray-600 mb-4">
+                  racks and assesses project outcomes and impacts.
+                  Collects and analyzes data for reporting.
+                  Recommends improvements to programs.
+                  Supports transparency and accountability.
+                </p>
+                <div class="flex space-x-4">
+                  <a href="https://www.facebook.com/" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a href="https://wa.me/+254700442924" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a href="mailto:kinyajui@angazawest.org" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="founder-card bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row">
+              <div class="md:w-1/3">
+                <img src="" 
+                   alt="Founder" class="w-full h-64 md:h-full object-cover">
+              </div>
+              <div class="p-6 md:w-2/3">
+                <h3 class="text-2xl font-bold mb-2">DOUGLAS NDURU MUCHIGA</h3>
+                <p class="text-blue-600 font-medium mb-4">ASSISTANT SECRETARY</p>
+                <p class="text-gray-600 mb-4">
+                Supports the Secretary with documentation and communications.
+                Takes minutes in the absence of the Secretary.
+                Helps manage the filing system and data entry.
+                </p>
+                <div class="flex space-x-4">
+                  <a href="https://www.facebook.com/" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a href="https://wa.me/+254798383124" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a href="mailto:muchiga@angazawest.org" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="founder-card bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row">
+              <div class="md:w-1/3">
+                <img src="kuria.JPG" 
+                   alt="Founder" class="w-full h-64 md:h-full object-cover">
+              </div>
+              <div class="p-6 md:w-2/3">
+                <h3 class="text-2xl font-bold mb-2">ANTONY KINUTHIA KURIA</h3>
+                <p class="text-blue-600 font-medium mb-4">TREASURER</p>
+                <p class="text-gray-600 mb-4">
+                   Manages the organization's finances and keeps financial records.
+                   Prepares budgets, financial reports, and fundraising updates.
+                   Ensures proper use and documentation of funds.
+                   Oversees banking and financial compliance.
+                </p>
+                <div class="flex space-x-4">
+                  <a href="https://www.facebook.com/" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a href="https://wa.me/+254729990365" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a href="mailto:kinuthia@angazawest.org" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="founder-card bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row">
+              <div class="md:w-1/3">
+                <img src="dennis.JPG" 
+                   alt="Founder" class="w-full h-64 md:h-full object-cover">
+              </div>
+              <div class="p-6 md:w-2/3">
+                <h3 class="text-2xl font-bold mb-2">DENNIS NYAMBURA NJUGUNA</h3>
+                <p class="text-blue-600 font-medium mb-4">MEMBER</p>
+                <p class="text-gray-600 mb-4">
+                  Active since January 2025
+                </p>
+                <div class="flex space-x-4">
+                  <a href="https://www.facebook.com/" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a href="https://wa.me/+254790562104" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a href="mailto:dennis@angazawest.org" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="founder-card bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row">
+              <div class="md:w-1/3">
+                <img src="" 
+                   alt="Founder" class="w-full h-64 md:h-full object-cover">
+              </div>
+              <div class="p-6 md:w-2/3">
+                <h3 class="text-2xl font-bold mb-2">ALEX</h3>
+                <p class="text-blue-600 font-medium mb-4">MEMBER</p>
+                <p class="text-gray-600 mb-4">
+                  Active since January 2025
+                </p>
+                <div class="flex space-x-4">
+                  <a href="https://www.facebook.com/" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a href="https://wa.me/+254758302922" class="text-blue-500 hover:text-blue-700">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                  <a href="mailto:alex@angazawest.org" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+         <!-- Other Members Section -->
+        <section id="members" class="p-8 bg-white">
+          <h2 class="text-2xl font-semibold mb-4">OTHER MEMBERS</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="group.JPG" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">CHAMA CHA MAPINDUZI</h3>
+              <p>A FUNCTIONING GROUP FOUNDED IN 1960</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="member1.jpg" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">Member Name</h3>
+              <p>Role or description</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="member1.jpg" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">Member Name</h3>
+              <p>Role or description</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="member1.jpg" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">Member Name</h3>
+              <p>Role or description</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="member1.jpg" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">Member Name</h3>
+              <p>Role or description</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="member1.jpg" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">Member Name</h3>
+              <p>Role or description</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="member1.jpg" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">Member Name</h3>
+              <p>Role or description</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="member1.jpg" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">Member Name</h3>
+              <p>Role or description</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="member1.jpg" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">Member Name</h3>
+              <p>Role or description</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="member1.jpg" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">Member Name</h3>
+              <p>Role or description</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded shadow">
+              <img src="member1.jpg" alt="Member" class="w-full h-48 object-cover rounded mb-2">
+              <h3 class="text-lg font-semibold">Member Name</h3>
+              <p>Role or description</p>
+            </div>
+
+          </div>
+        </section>
+
+           <!-- NEW PROGRAMS SECTION -->
+        <section id="programs" class="section-3d p-8 mb-6">
+          <h2 class="text-2xl font-semibold mb-6">OUR PROGRAMS</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Program 1 -->
+            <div class="program-card p-6 rounded-lg">
+              <div class="program-icon w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-tree text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Environmental</h3>
+              <p class="text-gray-600 mb-4">
+                Tree planting initiatives and community clean-up campaigns.
+              </p>
+              <div class="flex items-center text-sm text-gray-500">
+                <i class="fas fa-calendar-alt mr-2"></i>
+                <span>Monthly events</span>
+              </div>
+            </div>
+            
+            <!-- Program 2 -->
+            <div class="program-card p-6 rounded-lg">
+              <div class="program-icon w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-heartbeat text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Health Outreach</h3>
+              <p class="text-gray-600 mb-4">
+              Health sensitization in partnership with Community health promoters.
+              </p>
+              <div class="flex items-center text-sm text-gray-500">
+                <i class="fas fa-users mr-2"></i>
+                <span>0 served</span>
+              </div>
+            </div>
+            
+            <!-- Program 3 -->
+            <div class="program-card p-6 rounded-lg">
+              <div class="program-icon w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-female text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Women Empowerment</h3>
+              <p class="text-gray-600 mb-4">
+                Recommendation for financial literacy training.
+              </p>
+              <div class="flex items-center text-sm text-gray-500">
+                <i class="fas fa-users mr-2"></i>
+                <span>0 businesses started</span>
+              </div>
+            </div>
+            
+            <!-- Program 4 -->
+            <div class="program-card p-6 rounded-lg">
+              <div class="program-icon w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-utensils text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Food Security</h3>
+              <p class="text-gray-600 mb-4">
+                Urban farming and community kitchen initiatives.
+              </p>
+              <div class="flex items-center text-sm text-gray-500">
+                <i class="fas fa-home mr-2"></i>
+                <span>0 families reached</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- Projects Section -->
+        <section id="projects" class="p-8">
+          <h2 class="text-2xl font-semibold mb-4">PROJECTS</h2>
+          <h3 class="text-xl font-bold">Ongoing Projects</h3>
+          <ul class="list-disc pl-5 mb-4">
+            <li>Youth Empowerment Workshops</li>
+            <li>Community Clean-up Drives</li>
+          </ul>
+          <h3 class="text-xl font-bold">Proposed Projects</h3>
+          <ul class="list-disc pl-5">
+            <li>Community upgrade</li>
+            <li>Water Sanitation Program</li>
+          </ul>
+        </section>
+
+       <!-- News Section -->
+        <section id="news" class="p-8 bg-white">
+          <h2 class="text-2xl font-semibold mb-6">NEWS</h2>
+          
+          <!-- News Upload Form -->
+          <div class="bg-gray-50 p-6 rounded-lg shadow mb-8">
+            <h3 class="text-xl font-semibold mb-4">Add News Item</h3>
+            <form id="newsForm" class="space-y-4">
+              <div>
+                <label for="newsTitle" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <input type="text" id="newsTitle" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              
+              <div>
+                <label for="newsDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea id="newsDescription" rows="3" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+              </div>
+              
+              <div>
+                <label for="newsFile" class="block text-sm font-medium text-gray-700 mb-1">Upload Media (Image, Video, or PDF)</label>
+                <input type="file" id="newsFile" accept="image/*,video/*,application/pdf" class="block w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-md file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-blue-50 file:text-blue-700
+                  hover:file:bg-blue-100">
+              </div>
+              
+              <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Add News Item
+              </button>
+            </form>
+            
+            <!-- Preview Area -->
+            <div id="previewArea" class="mt-6 hidden">
+              <h4 class="text-lg font-medium mb-2">Preview</h4>
+              <div id="mediaPreview" class="mb-4"></div>
+              <h3 id="previewTitle" class="text-xl font-semibold"></h3>
+              <p id="previewDescription" class="text-gray-600 mt-2"></p>
+            </div>
+          </div>
+          
+          <!-- News Items Display -->
+          <div id="newsItems" class="space-y-6">
+           
+            <div class="news-item bg-white p-6 rounded-lg shadow border border-gray-100">
+              <div class="flex justify-between items-start">
+                <h3 class="text-xl font-semibold">Youth Empowerment Workshop Success</h3>
+                <span class="text-sm text-gray-500">June 15, 2023</span>
+              </div>
+              <p class="text-gray-600 mt-2">Our recent youth workshop attracted over 100 participants and covered important topics on leadership and entrepreneurship.</p>
+              <div class="mt-4">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80" 
+                     alt="Workshop image" class="rounded-lg max-h-64 object-cover w-full">
+              </div>
+            </div>
+            
+            <div class="news-item bg-white p-6 rounded-lg shadow border border-gray-100">
+              <div class="flex justify-between items-start">
+                <h3 class="text-xl font-semibold">Community Clean-up Day</h3>
+                <span class="text-sm text-gray-500">May 28, 2023</span>
+              </div>
+              <p class="text-gray-600 mt-2">Volunteers came together to clean up the local market area, collecting over 50 bags of waste.</p>
+              <div class="mt-4">
+                <video controls class="rounded-lg w-full">
+                  <source src="https://samplelib.com/lib/preview/mp4/sample-5s.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Vacancies Section -->
+        <section id="vacancies" class="p-8">
+          <h2 class="text-2xl font-semibold mb-4">VACANCIES</h2>
+          <ul class="list-disc pl-5">
+            <li>Community Outreach Coordinator</li>
+            <li>Volunteer Teachers</li>
+          </ul>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="p-8 bg-white">
+          <h2 class="text-2xl font-semibold mb-4">CONTACT INFO</h2>
+          <p><i class="fas fa-phone mr-2"></i>Phone: +254791503092</p>
+          <p><i class="fas fa-envelope mr-2"></i>Email: info@angazawest.org</p>
+          <p><i class="fab fa-whatsapp mr-2"></i><a href="https://wa.me/254791503092" class="text-blue-600 hover:underline">Chat on WhatsApp</a></p>
+        </section>
+
+        <!-- Donate Section -->
+        <section id="donate" class="p-8">
+          <h2 class="text-2xl font-semibold mb-4">DONATE</h2>
+          <ul class="list-disc pl-5">
+            <li><strong>M-PESA PayBill:</strong> 123456 - Account: Angaza</li>
+            <li><strong>Bank Account:</strong> Angaza West Initiative, ABC Bank, A/C No. 123456789</li>
+            <li><strong>PayPal:</strong> <a href="https://paypal.me/angazawest" class="text-blue-600 hover:underline">paypal.me/angazawest</a></li>
+          </ul>
+        </section>
+
+       <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold text-center mb-8 text-gray-800">ORGANIZATION CERTIFICATES</h1>
+    
+    <!-- Certificate List -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div class="certificate-card p-4 border rounded-lg cursor-pointer" 
+           onclick="showCertificate('angaza.pdf')">
+        <div class="flex items-center">
+          <i class="fas fa-file-pdf text-red-500 text-2xl mr-3"></i>
+          <div>
+            <h3 class="font-medium">Registration Certificate</h3>
+            <p class="text-sm text-gray-500">Issued: September, 2022</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="certificate-card p-4 border rounded-lg cursor-pointer"
+           onclick="showCertificate('pdf/tax-compliance.pdf')">
+        <div class="flex items-center">
+          <i class="fas fa-file-pdf text-red-500 text-2xl mr-3"></i>
+          <div>
+            <h3 class="font-medium">Tax Compliance</h3>
+            <p class="text-sm text-gray-500">Issued: August, 2025</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="certificate-card p-4 border rounded-lg cursor-pointer"
+           onclick="showCertificate('pdf/award.pdf')">
+        <div class="flex items-center">
+          <i class="fas fa-file-pdf text-red-500 text-2xl mr-3"></i>
+          <div>
+            <h3 class="font-medium">Award of Excellence</h3>
+            <p class="text-sm text-gray-500">Issued: Dec 5, 2023</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PDF Viewer -->
+    <div class="pdf-container bg-white">
+      <iframe id="pdf-viewer" class="w-full h-full" frameborder="0"></iframe>
+    </div>
+    
+    <p class="text-center text-gray-500 mt-4">
+      Click on any certificate to view it in the viewer above
+    </p>
+  </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+   <footer class="bg-stone-900 text-white text-center p-4 mt-8">
+    <p>&copy; 2025 Angaza West Initiative. All rights reserved.</p>
+    <script>console.log("Footer rendered");</script>
+  </footer>
+
+  <script>
+      // Add animation to the 3D header on scroll
+    document.addEventListener('DOMContentLoaded', function() {
+      const header = document.querySelector('.header-3d');
+      
+      window.addEventListener('scroll', function() {
+        const scrollPosition = window.scrollY;
+        header.style.transform = `perspective(1000px) rotateX(${Math.min(scrollPosition/10, 10)}deg)`;
+      });
+    });
+  // Toggle sidebar collapse
+    document.getElementById('collapseSidebar').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('sidebar-collapsed');
+      
+      // Rotate the collapse icon
+      const icon = this.querySelector('i');
+      icon.classList.toggle('fa-chevron-left');
+      icon.classList.toggle('fa-chevron-right');
+    });
+
+    // Toggle mobile menu
+    document.getElementById('mobileMenuButton').addEventListener('click', function() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('flex');
+    });
+     
+       // Close sidebar when clicking on a link (mobile)
+    document.querySelectorAll('#sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          document.getElementById('sidebar').classList.add('hidden');
+        }
+      });
+    });
+   function showCertificate(pdfPath) {
+      document.getElementById('pdf-viewer').src = pdfPath;
+    }
+    
+    // Load first certificate by default
+    document.addEventListener('DOMContentLoaded', function() {
+      showCertificate('pdf/registration.pdf');
+    });
+
+  </script>
+</body>
+
+</html>
